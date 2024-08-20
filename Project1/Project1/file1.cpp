@@ -12,11 +12,13 @@ int main()
 
 {
 
-    Mat image;
+    Mat image, image2, image3;
 
-    image = imread("thacoolest.png", IMREAD_COLOR);   // Read the file
+    image = imread("THACOOLEST.png", IMREAD_GRAYSCALE);
+    image2 = imread("anegg.jpg", IMREAD_COLOR);
+    image3 = imread("pigs.jpg", IMREAD_COLOR);// Read the file
 
-    if (!image.data)                              // Check for invalid input
+    if (!image.data || !image2.data || !image3.data)                              // Check for invalid input
 
     {
 
@@ -27,8 +29,12 @@ int main()
     }
 
     namedWindow("Display window", WINDOW_AUTOSIZE);// Create a window for display.
-
-    imshow("Display window", image);                   // Show our image inside it.
+    namedWindow("Display window 2", WINDOW_NORMAL);
+    namedWindow("Display window 3", WINDOW_AUTOSIZE);
+    
+    imshow("Display window", image);   
+    imshow("Display window 2", image2); 
+    imshow("Display window 3", image3); // Show our image inside it.
 
     waitKey(0);                                          // Wait for a keystroke in the window
 
