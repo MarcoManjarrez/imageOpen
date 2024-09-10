@@ -13,6 +13,9 @@ void addImage(int cols, int rows, Mat image, Mat image2);
 void constantImage(Mat image);
 void functionImage(Mat image);
 void addImagePercentage(int cols, int rows, int percentage, int percentage2,  Mat image, Mat image2);
+void substractImage(int cols,int rows, Mat image, Mat image2);
+void imageNegative(int cols, int rows, Mat image);
+void histogram(int cols, int rows, Mat image);
 
 int main() {
 	int columns, rows;
@@ -33,15 +36,18 @@ int main() {
 	else {
 		rows = image2.rows;
 	}
-	
+	showImage(image);
+	showImage(image2);
 	/*
 	createMask(columns, rows, image2, image);
 	addImage(columns, rows, image, image2);
 	constantImage(image);
 	functionImage(image);
-	*/
-	showImage(image);
+	substractImage(columns, rows, image, image2 );
 	addImagePercentage(columns, rows, 60, 40, image, image2);
+	imageNegative(columns, rows, image);
+	*/
+	histogram(columns, rows, image);
 }
 
 
@@ -174,4 +180,68 @@ void addImagePercentage(int cols, int rows, int percentage, int percentage2, Mat
 
 	waitKey(0);
 
+}
+
+void substractImage(int cols, int rows, Mat image, Mat image2) {
+	Mat addedImage(rows, cols, CV_8U);
+
+	namedWindow("Substracted Image", WINDOW_AUTOSIZE);
+
+	for (int i = 0; i < cols; i++) {
+		for (int j = 0; j < rows; j++) {
+			int pixelValue = (float)image.at<uchar>(j, i) - image2.at<uchar>(j, i);
+			if(pixelValue < 0) {
+				addedImage.at<uchar>(j, i) = (uchar)0;
+			}
+			else {
+				addedImage.at<uchar>(j, i) = (uchar)pixelValue;
+			}
+
+		}
+	}
+
+	imshow("Substracted Image", addedImage);
+
+	waitKey(0);
+}
+
+void imageNegative(int cols, int rows, Mat image) {
+	Mat addedImage(rows, cols, CV_8U);
+
+	namedWindow("Negative Image", WINDOW_AUTOSIZE);
+
+	for (int i = 0; i < cols; i++) {
+		for (int j = 0; j < rows; j++) {
+			int pixelValue = (float) 255 - image.at<uchar>(j, i);
+			if (pixelValue < 0) {
+				addedImage.at<uchar>(j, i) = (uchar)0;
+			}
+			else {
+				addedImage.at<uchar>(j, i) = (uchar)pixelValue;
+			}
+
+		}
+	}
+
+	imshow("Negative Image", addedImage);
+
+	waitKey(0);
+}
+
+void histogram(int cols, int rows, Mat image) {
+	int counter[256] = { 0 };
+	Mat addedImage(rows, cols, CV_8U);
+
+
+	for (int i = 0; i < cols; i++) {
+		for (int j = 0; j < rows; j++) {
+			counter[(int)image.at<uchar>(j, i)]++;
+		}
+	}
+
+	for (int i = 0; i < 256; i++) {
+		cout << "Pixeles con valor " << i << " es igual a " << counter[i] << endl;
+	}
+
+	waitKey(0);
 }
