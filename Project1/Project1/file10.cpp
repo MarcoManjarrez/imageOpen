@@ -104,6 +104,7 @@ void growing(Mat image) {
 	queue<Point> pixels;
 	Mat newImage(image.rows, image.cols, CV_8U);
 	Mat checkMatrix(image.rows, image.cols, CV_8U, Scalar(0));
+	Point2d pt1;
 	int cont = 1;
 	
 
@@ -127,19 +128,20 @@ void growing(Mat image) {
 				checkMatrix.at<uchar>(j,i) = cont;
 				for (int k = -1; k <= 1; k++) {
 					for (int l = -1; l <= 1; l++) {
-						if((i+l) > 0 && (i + l) < image.cols && (j+k) > 0 && (j + k) < image.rows){
-						if (newImage.at<uchar>(i + l, j + k) == 255) pixels.push(Point(i+l, j+k));
+						if((i+l) >= 0 && (j + l) < image.cols && (j+k) >= 0 && (i + k) < image.rows){
+						if (newImage.at<uchar>(j + l, i + k) == 255) pixels.push(Point(j+l, i+k));
 						}
 					}
 				}
 				while (!pixels.empty()) {
-					if (newImage.at<uchar>(pixels.front().x, pixels.front().y) == 255 && checkMatrix.at<uchar>(pixels.front().x, pixels.front().y) == 0) {
-						checkMatrix.at<uchar>(pixels.front().x, pixels.front().y) = cont;
-						pixels.pop();
+					pt1 = pixels.front();
+					pixels.pop();
+					if (newImage.at<uchar>(pt1.x, pt1.y) == 255 && checkMatrix.at<uchar>(pt1.x, pt1.y) == 0) {
+						checkMatrix.at<uchar>(pt1.x, pt1.y) = cont;
 						for (int k = -1; k <= 1; k++) {
 							for (int l = -1; l <= 1; l++) {
-								if ((i + l) > 0 && (i + l) < image.cols && (j + k) > 0 && (j + k) < image.rows) {
-									if (newImage.at<uchar>(i + l, j + k) == 255) pixels.push(Point(i + l, j + k));
+								if ((i + l) >= 0 && (i + l) < image.cols && (j + k) >= 0 && (j + k) < image.rows) {
+									if (newImage.at<uchar>(j + l, i + k) == 255) pixels.push(Point(j + l, i + k));
 								}
 							}
 						}
@@ -155,5 +157,5 @@ void growing(Mat image) {
 	imshow("Binary", newImage);
 	namedWindow("Regioned image", WINDOW_AUTOSIZE);
 	imshow("Regioned image", checkMatrix);
-
+	waitKey(0);
 }
