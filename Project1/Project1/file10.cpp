@@ -105,7 +105,7 @@ void growing(Mat image) {
 	Mat newImage(image.rows, image.cols, CV_8U);
 	Mat checkMatrix(image.rows, image.cols, CV_8U, Scalar(0));
 	Point2d pt1;
-	int cont = 1;
+	int cont = 100;
 	
 
 
@@ -126,9 +126,9 @@ void growing(Mat image) {
 			{
 			  if(checkMatrix.at<uchar>(j, i) == 0){
 				checkMatrix.at<uchar>(j,i) = cont;
-				for (int k = -1; k <= 1; k++) {
-					for (int l = -1; l <= 1; l++) {
-						if((i+l) >= 0 && (j + l) < image.cols && (j+k) >= 0 && (i + k) < image.rows){
+				for (int k = -1; k <= 1; k++) { //i
+					for (int l = -1; l <= 1; l++) { //j
+						if((j+l) >= 0 && (j + l) < image.rows && (i+k) >= 0 && (i + k) < image.cols){
 						if (newImage.at<uchar>(j + l, i + k) == 255) pixels.push(Point(j+l, i+k));
 						}
 					}
@@ -138,10 +138,11 @@ void growing(Mat image) {
 					pixels.pop();
 					if (newImage.at<uchar>(pt1.x, pt1.y) == 255 && checkMatrix.at<uchar>(pt1.x, pt1.y) == 0) {
 						checkMatrix.at<uchar>(pt1.x, pt1.y) = cont;
-						for (int k = -1; k <= 1; k++) {
-							for (int l = -1; l <= 1; l++) {
-								if ((i + l) >= 0 && (i + l) < image.cols && (j + k) >= 0 && (j + k) < image.rows) {
-									if (newImage.at<uchar>(j + l, i + k) == 255) pixels.push(Point(j + l, i + k));
+						for (int k = -1; k <= 1; k++) { //i
+							for (int l = -1; l <= 1; l++) { //j
+								if ((pt1.x + l) >= 0 && (pt1.x + l) < image.rows && (pt1.y + k) >= 0 && (pt1.y + k) < image.cols) {
+									if (newImage.at<uchar>(pt1.x + l, pt1.y + k) == 255 && checkMatrix.at<uchar>(pt1.x + l, pt1.y + k) == 0)
+										pixels.push(Point(pt1.x + l, pt1.y + k));
 								}
 							}
 						}
