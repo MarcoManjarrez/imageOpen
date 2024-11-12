@@ -10,7 +10,7 @@ using namespace std;
 
 void scaling(int cols, int rows, int scalingFactorX, int scalingFactorY, Mat image);
 void smoothScaling(int cols, int rows, float scalingFactorX, float scalingFactorY, Mat image);
-
+void translation(int cols, int rows, int translationX, int translationY, Mat image);
 
 int main() {
     Mat image;
@@ -22,7 +22,8 @@ int main() {
     waitKey(0);
 
     //scaling(image.cols, image.rows, 2, 2, image);
-    smoothScaling(image.cols, image.rows, 5, 8, image);
+    //smoothScaling(image.cols, image.rows, 5, 8, image);
+    translation(image.cols, image.rows, -50, 50, image);
 }
 
 void scaling(int cols, int rows, int scalingFactorX, int scalingFactorY, Mat image) {
@@ -59,33 +60,35 @@ void smoothScaling(int cols, int rows, float scalingFactorX, float scalingFactor
         for (int j = 0; j < cHorizontal; j++) {
             float u = (i / scalingFactorY);
             float v = (j / scalingFactorX);
-            Q11 = image.at<uchar>(floor(u), floor(v));
-            Q21 = image.at<uchar>(ceil(u), floor(v));
-            Q12 = image.at<uchar>(floor(u), ceil(v));
-            Q22 = image.at<uchar>(ceil(u), ceil(v));
+            if (u >= 0 && u < cols && v >= 0 && v < rows) {
+                Q11 = image.at<uchar>(floor(u), floor(v));
+                Q21 = image.at<uchar>(ceil(u), floor(v));
+                Q12 = image.at<uchar>(floor(u), ceil(v));
+                Q22 = image.at<uchar>(ceil(u), ceil(v));
 
-            if (floor(u) == u && floor(v) == v) {
-                if (u >= 0 && u < cols && v >= 0 && v < rows)
+
+                if (floor(u) == u && floor(v) == v) {
                     scaledImage.at<uchar>(i, j) = image.at<uchar>(u, v);
+                }
+                else if (floor(u) == u && floor(v) != v) {
+                    R1 = Q11;
+                    R2 = Q12;
+                    P = ((float)(R2 - R1) / ((i + 1) - (i))) * (v - i) + R1;
+                    scaledImage.at<uchar>(i, j) = P;
+                }
+                else if (floor(u) != u && floor(v) == v) {
+                    R1 = Q11;
+                    R2 = Q21;
+                    P = ((float)(R2 - R1) / ((i + 1) - (i))) * (v - i) + R1;
+                    scaledImage.at<uchar>(i, j) = P;
+                }
+                else {
+                    R1 = ((float)(Q21 - Q11) / ((j + 1) - (j))) * (u - j) + Q11;
+                    R2 = ((float)(Q22 - Q12) / ((j + 1) - (j))) * (u - j) + Q12;
+                    P = ((float)(R2 - R1) / ((i + 1) - (i))) * (v - i) + R1;
+                    scaledImage.at<uchar>(i, j) = P;
+                }
             }
-            else if (floor(u) == u && floor(v) != v) {
-                R1 = Q11;
-                R2 = Q12;
-                P = ((float)(R2 - R1) / ((i + 1) - (i))) * (v - i) + R1;
-                scaledImage.at<uchar>(i, j) = P;
-            }
-            else if (floor(u) != u && floor(v) == v) {
-                R1 = Q11;
-                R2 = Q21;
-                P = ((float)(R2 - R1) / ((i + 1) - (i))) * (v - i) + R1;
-                scaledImage.at<uchar>(i, j) = P;
-            }
-            else {
-                R1 = ((float)(Q21 - Q11) / ((j + 1) - (j))) * (u - j) + Q11;
-                R2 = ((float)(Q22 - Q12) / ((j + 1) - (j))) * (u - j) + Q12;
-                P = ((float)(R2 - R1) / ((i + 1) - (i))) * (v - i) + R1;
-                scaledImage.at<uchar>(i, j) = P;
-            } 
         }
     }
     namedWindow("Horizontal Gradient", WINDOW_AUTOSIZE);
@@ -94,3 +97,23 @@ void smoothScaling(int cols, int rows, float scalingFactorX, float scalingFactor
     waitKey(0);
 }
 
+void translation(int cols, int rows, int translationX, int translationY, Mat image) {
+    Mat translatedImage(rows, cols, CV_8U);
+    for (int i = 0; i < cols; i++) {
+        for (int j = 0; j < rows; j++) {
+            int u = i - translationX;
+            int v = j - translationY;
+            if (u > 0 && u < cols && v > 0 && v < rows) {
+                translatedImage.at<uchar>(j, i) = image.at<uchar>(v, u);
+            }
+            else {
+                translatedImage.at<uchar>(j, i) = (uchar)0;
+            }
+        }
+    }
+
+    namedWindow("Translated image", WINDOW_AUTOSIZE);
+    imshow("Translated image", translatedImage);
+
+    waitKey(0);
+}
