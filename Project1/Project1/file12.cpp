@@ -77,19 +77,19 @@ void smoothScaling(int cols, int rows, float scalingFactorX, float scalingFactor
                 else if (floor(u) == u && floor(v) != v) {
                     R1 = Q11;
                     R2 = Q12;
-                    P = ((float)(R2 - R1) / ((i + 1) - (i))) * (v - i) + R1;
+                    P = ((float)(R2 - R1) / ((i + 1) - (i))) * (v - floor(v)) + R1;
                     scaledImage.at<uchar>(i, j) = (uchar)P;
                 }
                 else if (floor(u) != u && floor(v) == v) {
                     R1 = Q11;
                     R2 = Q21;
-                    P = ((float)(R2 - R1) / ((i + 1) - (i))) * (v - i) + R1;
+                    P = ((float)(R2 - R1) / ((i + 1) - (i))) * (v - floor(v)) + R1;
                     scaledImage.at<uchar>(i, j) = (uchar)P;
                 }
                 else {
-                    R1 = ((float)(Q21 - Q11) / ((j + 1) - (j))) * (u - j) + Q11;
-                    R2 = ((float)(Q22 - Q12) / ((j + 1) - (j))) * (u - j) + Q12;
-                    P = ((float)(R2 - R1) / ((i + 1) - (i))) * (v - i) + R1;
+                    R1 = ((float)(Q21 - Q11) / ((j + 1) - (j))) * (u - floor(u)) + Q11;
+                    R2 = ((float)(Q22 - Q12) / ((j + 1) - (j))) * (u - floor(u)) + Q12;
+                    P = ((float)(R2 - R1) / ((i + 1) - (i))) * (v - floor(v)) + R1;
                     scaledImage.at<uchar>(i, j) = (uchar)P;
                 }
             }
